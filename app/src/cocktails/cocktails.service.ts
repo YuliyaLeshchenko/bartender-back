@@ -14,24 +14,61 @@ export class CocktailsService {
 
     async getCocktails(): Promise<any[]> {
         const cocktails = await this.prisma.cocktail.findMany({
-            include: {
-                glassType: true,
-                buildType: true,
-                instructions: true,
-                ingredients: {
-                    include:  {
-                        measurment: true,
-                        ingredient: true,
+            select: {
+                name: true,
+                imageUrl: true,
+                glassType: {
+                    select: {
+                        name: true,
+                        description: true,
                     }
                 },
-            },
-        });
-        
-        return cocktails.map(cocktail => {
-            return {
-                name: cocktail.name,
+                buildType: {
+                    select: {
+                        name: true,
+                        description: true,
+                    }
+                },
+                instructions: {
+                    select: {
+                        order: true,
+                        text: true,
+                    }, 
+                    orderBy: {
+                        order: 'asc'
+                    },
+                },
+                ingredients: {
+                    select: {
+                        measurment: {
+                            select: {
+                                value: true,
+                                isMilliliters: true,
+                            }
+                        },
+                        ingredient: {
+                            select: {
+                                name: true,
+                                description: true,
+                            }
+                        },
+                    }
+                }
             }
+            // include: {
+            //     glassType: true,
+            //     buildType: true,
+            //     instructions: true,
+            //     ingredients: {
+            //         include:  {
+            //             measurment: true,
+            //             ingredient: true,
+            //         }
+            //     },
+            // },
         });
+
+        return cocktails;
     }
 
     async updateCocktail(dto: UpdateCocktailDto) {
