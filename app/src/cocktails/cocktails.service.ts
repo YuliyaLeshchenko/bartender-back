@@ -12,19 +12,34 @@ export class CocktailsService {
         return cocktail;
     }
 
+    async getCoctailsForSearch() {
+        const cocktails = await this.prisma.cocktail.findMany({
+            select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+            }
+        });
+
+        return cocktails;
+    }
+
     async getCocktails(): Promise<any[]> {
         const cocktails = await this.prisma.cocktail.findMany({
             select: {
+                id: true,
                 name: true,
                 imageUrl: true,
                 glassType: {
                     select: {
+                        id: true,
                         name: true,
                         description: true,
                     }
                 },
                 buildType: {
                     select: {
+                        id: true,
                         name: true,
                         description: true,
                     }
@@ -48,6 +63,7 @@ export class CocktailsService {
                         },
                         ingredient: {
                             select: {
+                                id: true,
                                 name: true,
                                 description: true,
                             }

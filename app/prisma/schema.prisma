@@ -117,6 +117,7 @@ model Cocktail {
   tags Tag[]
   ingredients IngredientsOnMeasurements[]
   instructions CocktailInstruction[]
+  rating Float?
   isPublished Boolean @default(false)
 
   createdAt DateTime @default(now())

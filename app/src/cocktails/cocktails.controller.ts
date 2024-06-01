@@ -22,4 +22,11 @@ export class CocktailsController {
     getAll() {
         return this.cocktailsService.getCocktails();
     }
+
+    @ApiOperation({summary: 'Get all cocktails for search (name and image)'})
+    @ApiResponse({status: 200, type: [String]})
+    @Get('search')
+    getAllSearch() {
+        return this.cocktailsService.getCoctailsForSearch();
+    }
 }
