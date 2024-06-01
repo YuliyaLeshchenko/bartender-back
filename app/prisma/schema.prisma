@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:root1@35.237.243.32:5434/bartender?schema=public"
 }
 
 model Tag {

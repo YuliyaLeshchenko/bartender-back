@@ -24,9 +24,14 @@ export class CocktailsService {
                         ingredient: true,
                     }
                 },
+            },
+        });
+        
+        return cocktails.map(cocktail => {
+            return {
+                name: cocktail.name,
             }
         });
-        return cocktails;
     }
 
     async updateCocktail(dto: UpdateCocktailDto) {
