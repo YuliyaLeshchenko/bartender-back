@@ -145,11 +145,14 @@ export class CocktailsService {
             where: {
                 OR: [
                     {
-                        name: name
+                        name: {
+                            contains: name,
+                            mode: 'insensitive'
+                        }
                     },
                     {
                         keys: {
-                            has: name,
+                            has: name.toLowerCase(),
                         }
                     }
                 ],
