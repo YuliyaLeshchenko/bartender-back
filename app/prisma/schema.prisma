@@ -14,18 +14,18 @@ datasource db {
 }
 
 model Tag {
-  id Int @id @default(autoincrement())
-  name String @unique
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
   description String?
-  cocktails Cocktail[]
+  cocktails   Cocktail[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model IngredientType {
-  id Int @id @default(autoincrement())
-  name String @unique
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
   description String?
   ingredients Ingredient[]
 
@@ -36,32 +36,32 @@ model IngredientType {
 }
 
 model GlassType {
-  id Int @id @default(autoincrement())
-  name String @unique
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
   description String?
-  cocktails Cocktail[]
+  cocktails   Cocktail[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model BuildType {
-  id Int @id @default(autoincrement())
-  name String @unique
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
   description String?
-  cocktails Cocktail[]
+  cocktails   Cocktail[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Ingredient {
-  id Int @id @default(autoincrement())
-  name String
-  description String?
+  id               Int                         @id @default(autoincrement())
+  name             String
+  description      String?
   ingredientTypeId Int
-  ingredientType IngredientType @relation(fields: [ingredientTypeId], references: [id])
-  measurments IngredientsOnMeasurements[]
+  ingredientType   IngredientType              @relation(fields: [ingredientTypeId], references: [id])
+  measurments      IngredientsOnMeasurements[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,55 +70,55 @@ model Ingredient {
 }
 
 model Measurement {
-  id Int @id @default(autoincrement())
-  value String 
+  id            Int     @id @default(autoincrement())
+  value         String
   isMilliliters Boolean @default(false)
 
   ingredients IngredientsOnMeasurements[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@map("measurements")
 }
 
-
 model IngredientsOnMeasurements {
   measurmentId Int
-  measurment Measurement @relation(fields: [measurmentId], references: [id])
+  measurment   Measurement @relation(fields: [measurmentId], references: [id])
   ingredientId Int
-  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
-  cocktailId Int
-  cocktail Cocktail @relation(fields: [cocktailId], references: [id])
+  ingredient   Ingredient  @relation(fields: [ingredientId], references: [id])
+  cocktailId   Int
+  cocktail     Cocktail    @relation(fields: [cocktailId], references: [id])
 
   @@id([measurmentId, ingredientId])
 }
 
 model CocktailInstruction {
-  id Int @id @default(autoincrement())
-  order Int 
-  text String
+  id         Int      @id @default(autoincrement())
+  order      Int
+  text       String
   cocktailId Int
-  cocktail Cocktail @relation(fields: [cocktailId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  cocktail   Cocktail @relation(fields: [cocktailId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
-
 model Cocktail {
-  id Int @id @default(autoincrement())
-  name String @unique
-  imageUrl String?
-  keys String[]
-  description String
-  glassTypeId Int
-  glassType GlassType @relation(fields: [glassTypeId], references: [id])
-  buildTypeId Int
-  buildType BuildType @relation(fields: [buildTypeId], references: [id])
-  tags Tag[]
-  ingredients IngredientsOnMeasurements[]
-  instructions CocktailInstruction[]
-  rating Float?
-  isPublished Boolean @default(false)
+  id            Int                         @id @default(autoincrement())
+  name          String                      @unique
+  imageUrl      String?
+  keys          String[]
+  description   String
+  glassTypeId   Int
+  glassType     GlassType                   @relation(fields: [glassTypeId], references: [id])
+  buildTypeId   Int
+  buildType     BuildType                   @relation(fields: [buildTypeId], references: [id])
+  tags          Tag[]
+  ingredients   IngredientsOnMeasurements[]
+  instructions  CocktailInstruction[]
+  rating        Float?
+  countOfRating Int                         @default(0)
+  isPublished   Boolean                     @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

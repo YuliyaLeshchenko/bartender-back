@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class CocktailsService {
 
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService) { }
 
     async createCocktail(dto: CreateCocktailDto): Promise<any> {
         const cocktail = {};
@@ -14,6 +14,9 @@ export class CocktailsService {
 
     async getCoctailsForSearch() {
         const cocktails = await this.prisma.cocktail.findMany({
+            where: {
+                isPublished: true,
+            },
             select: {
                 id: true,
                 name: true,
@@ -26,6 +29,9 @@ export class CocktailsService {
 
     async getCocktails(): Promise<any[]> {
         const cocktails = await this.prisma.cocktail.findMany({
+            where: {
+                isPublished: true,
+            },
             select: {
                 id: true,
                 name: true,
@@ -48,7 +54,7 @@ export class CocktailsService {
                     select: {
                         order: true,
                         text: true,
-                    }, 
+                    },
                     orderBy: {
                         order: 'asc'
                     },
@@ -71,17 +77,135 @@ export class CocktailsService {
                     }
                 }
             }
-            // include: {
-            //     glassType: true,
-            //     buildType: true,
-            //     instructions: true,
-            //     ingredients: {
-            //         include:  {
-            //             measurment: true,
-            //             ingredient: true,
-            //         }
-            //     },
-            // },
+        });
+
+        return cocktails;
+    }
+
+    async getCocktailById(id: number) {
+        const cocktail = await this.prisma.cocktail.findFirst({
+            where: {
+                id: +id,
+                isPublished: true,
+            },
+            select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+                rating: true,
+                countOfRating: true,
+                glassType: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    }
+                },
+                buildType: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    }
+                },
+                instructions: {
+                    select: {
+                        order: true,
+                        text: true,
+                    },
+                    orderBy: {
+                        order: 'asc'
+                    },
+                },
+                ingredients: {
+                    select: {
+                        measurment: {
+                            select: {
+                                value: true,
+                                isMilliliters: true,
+                            }
+                        },
+                        ingredient: {
+                            select: {
+                                id: true,
+                                name: true,
+                                description: true,
+                            }
+                        },
+                    }
+                }
+            }
+        });
+
+        return cocktail;
+    }
+
+    async getCocktailsByName(name: string = "") {
+        const cocktails = await this.prisma.cocktail.findMany({
+            where: {
+                OR: [
+                    {
+                        name: name
+                    },
+                    {
+                        keys: {
+                            has: name,
+                        }
+                    }
+                ],
+                AND: [
+                    {
+                        isPublished: true,
+                    }
+                ]
+            },
+            select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+                rating: true,
+                countOfRating: true,
+                glassType: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    }
+                },
+                buildType: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    }
+                },
+                instructions: {
+                    select: {
+                        order: true,
+                        text: true,
+                    },
+                    orderBy: {
+                        order: 'asc'
+                    },
+                },
+                ingredients: {
+                    select: {
+                        measurment: {
+                            select: {
+                                value: true,
+                                isMilliliters: true,
+                            }
+                        },
+                        ingredient: {
+                            select: {
+                                id: true,
+                                name: true,
+                                description: true,
+                            }
+                        },
+                    }
+                }
+            }
         });
 
         return cocktails;

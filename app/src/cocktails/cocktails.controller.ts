@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateCocktailDto } from './dto/create-cocktail.dto';
 import { CocktailsService } from './cocktails.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -28,5 +28,19 @@ export class CocktailsController {
     @Get('search')
     getAllSearch() {
         return this.cocktailsService.getCoctailsForSearch();
+    }
+
+    @ApiOperation({summary: 'Get cocktail by ID'})
+    @ApiResponse({status: 200, type: [String]})
+    @Get(":id")
+    getById(@Param('id') id: number) {
+        return this.cocktailsService.getCocktailById(id);
+    }
+
+    @ApiOperation({summary: 'Get cocktails by name'})
+    @ApiResponse({status: 200, type: [String]})
+    @Get("name/:name")
+    getByName(@Param('name') name: string) {
+        return this.cocktailsService.getCocktailsByName(name);
     }
 }
