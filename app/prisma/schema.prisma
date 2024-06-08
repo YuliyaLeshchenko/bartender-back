@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:root1@localhost:5432/bartender?schema=public"
+  url      = "postgresql://postgres:root1@localhost:5434/bartender?schema=public"
 }
 
 model Tag {
@@ -83,14 +83,13 @@ model Measurement {
 }
 
 model IngredientsOnMeasurements {
+  id         Int      @id @default(autoincrement())
   measurmentId Int
   measurment   Measurement @relation(fields: [measurmentId], references: [id])
   ingredientId Int
   ingredient   Ingredient  @relation(fields: [ingredientId], references: [id])
-  cocktailId   Int
-  cocktail     Cocktail    @relation(fields: [cocktailId], references: [id])
-
-  @@id([measurmentId, ingredientId])
+  cocktailId Int
+  cocktail   Cocktail @relation(fields: [cocktailId], references: [id])
 }
 
 model CocktailInstruction {
