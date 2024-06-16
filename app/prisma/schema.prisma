@@ -10,7 +10,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:root1@localhost:5434/bartender?schema=public"
+  url      = "postgresql://postgres:root1@10.142.0.2:5434/bartender?schema=public"
+  // url      = "postgresql://postgres:root1@localhost:5434/bartender?schema=public"
 }
 
 model TagType {
@@ -18,6 +19,7 @@ model TagType {
   order       Int     @default(0)
   name        String
   description String?
+  isShown     Boolean @default(false)
   tags        Tag[]
 }
 
@@ -28,7 +30,8 @@ model Tag {
   description String?
   cocktails   Cocktail[]
   tagTypeId   Int?
-  tagType     TagType?    @relation(fields: [tagTypeId], references: [id])
+  tagType     TagType?   @relation(fields: [tagTypeId], references: [id])
+  isShown     Boolean    @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
