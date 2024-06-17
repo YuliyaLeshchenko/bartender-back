@@ -12,19 +12,78 @@ export class CocktailsService {
         return cocktail;
     }
 
-    async getCoctailsForSearch() {
-        const cocktails = await this.prisma.cocktail.findMany({
+    async getSimplifiedCocktails() {
+        let cocktails = [];
+        const tagTypes = await this.prisma.tagType.findMany({
             where: {
+                isShown: true,
+            },
+            select: {
+                id: true,
+                order: true,
+                name: true,
+            }
+        })
+        const tags = await this.prisma.tag.findMany({
+            where: {
+                isShown: true,
+            }, select: {
+                id: true,
+                order: true,
+                name: true,
+                tagType: {
+                    select: {
+                        id: true,
+                        order: true,
+                        name: true,
+                    }
+                }
+            }
+        });
+
+        const shownTags = tags.filter(tag => tag.order === 1)
+
+        await Promise.all(shownTags.map(tag => this.getCocktailsByTag(tag))).then(res => {
+            cocktails = res.flat();
+            return;
+        })
+
+        const result = tagTypes.map(tagType => {
+            const t = [...tags.filter(tag => tag.tagType.id === tagType.id)];
+            return {
+                ...tagType,
+                tags: t.map(tag => {
+                    return {
+                        ...tagType,
+                        cocktails: [...cocktails.filter(cocktail => cocktail.tags.filter(t => t.id === tag.id).length)]
+                    }
+                }).filter(tag => tag.cocktails.length)
+            }
+        }).filter(tagType => tagType.tags.length);
+        return result;
+    }
+
+    async getCocktailsByTag(tag) {
+        return this.prisma.cocktail.findMany({
+            where: {
+                tags: {
+                    some: tag
+                },
                 isPublished: true,
             },
             select: {
                 id: true,
                 name: true,
                 imageUrl: true,
+                tags: {
+                    select: {
+                        id: true,
+                        name: true,
+                        order: true,
+                    }
+                }
             }
-        });
-
-        return cocktails;
+        })
     }
 
     async getCocktails(): Promise<any[]> {
@@ -35,6 +94,7 @@ export class CocktailsService {
             select: {
                 id: true,
                 name: true,
+                description: true,
                 imageUrl: true,
                 glassType: {
                     select: {

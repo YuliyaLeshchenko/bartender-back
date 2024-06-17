@@ -27,7 +27,7 @@ export class CocktailsController {
     @ApiResponse({status: 200, type: [String]})
     @Get('search')
     getAllSearch() {
-        return this.cocktailsService.getCoctailsForSearch();
+        return this.cocktailsService.getSimplifiedCocktails();
     }
 
     @ApiOperation({summary: 'Get cocktail by ID'})
