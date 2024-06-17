@@ -54,10 +54,11 @@ export class CocktailsService {
                 ...tagType,
                 tags: t.map(tag => {
                     return {
-                        ...tagType,
-                        cocktails: [...cocktails.filter(cocktail => cocktail.tags.filter(t => t.id === tag.id).length)]
+                        ...tag,
+                        cocktails: [...cocktails.filter(cocktail => cocktail.tags.filter(t => t.id === tag.id).length)],
                     }
-                }).filter(tag => tag.cocktails.length)
+                })
+                    .filter(tag => tag.cocktails.length).sort((a, b) => a.order - b.order)
             }
         }).filter(tagType => tagType.tags.length);
         return result;
