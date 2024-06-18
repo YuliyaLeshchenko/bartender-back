@@ -22,6 +22,9 @@ export class CocktailsService {
                 id: true,
                 order: true,
                 name: true,
+            },
+            orderBy: {
+                order: 'asc'
             }
         })
         const tags = await this.prisma.tag.findMany({
@@ -44,7 +47,7 @@ export class CocktailsService {
         const shownTags = tags.filter(tag => tag.order === 1)
 
         await Promise.all(shownTags.map(tag => this.getCocktailsByTag(tag))).then(res => {
-            cocktails = res.flat();
+            cocktails = [...new Set(res.flat())];
             return;
         })
 
