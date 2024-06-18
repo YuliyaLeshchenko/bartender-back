@@ -37,6 +37,13 @@ export class CocktailsController {
         return this.cocktailsService.getCocktailById(id);
     }
 
+    @ApiOperation({summary: 'Get cocktails by tag'})
+    @ApiResponse({status: 200, type: [String]})
+    @Get("tag/:tag")
+    getByTag(@Param('tag') tag: string) {
+        return this.cocktailsService.getCocktailsByTag(tag);
+    }
+
     @ApiOperation({summary: 'Get cocktails by name'})
     @ApiResponse({status: 200, type: [String]})
     @Get("name/:name")

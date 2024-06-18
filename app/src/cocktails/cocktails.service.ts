@@ -44,10 +44,17 @@ export class CocktailsService {
             }
         });
 
-        const shownTags = tags.filter(tag => tag.order === 1)
+        const shownTags = tags.filter(tag => tag.order === 1);
+        console.log(shownTags, 'shownTags');
 
-        await Promise.all(shownTags.map(tag => this.getCocktailsByTag(tag))).then(res => {
-            cocktails = [...new Set(res.flat())];
+        await Promise.all(shownTags.map(tag => this.getCocktailsByTag(tag.name))).then(res => {
+            [...new Set([...res.flat().map(cocktail => cocktail.id)])].map(cocktailId => {
+                const cocktail = res.flat().find(c => c.id === cocktailId);
+                cocktail && cocktails.push(cocktail);
+                return
+            })
+            
+            console.log(cocktails);
             return;
         })
 
@@ -60,8 +67,7 @@ export class CocktailsService {
                         ...tag,
                         cocktails: [...cocktails.filter(cocktail => cocktail.tags.filter(t => t.id === tag.id).length)],
                     }
-                })
-                    .filter(tag => tag.cocktails.length).sort((a, b) => a.order - b.order)
+                }).sort((a, b) => a.order - b.order)
             }
         }).filter(tagType => tagType.tags.length);
         return result;
@@ -71,7 +77,9 @@ export class CocktailsService {
         return this.prisma.cocktail.findMany({
             where: {
                 tags: {
-                    some: tag
+                    some: {
+                        name: tag
+                    }
                 },
                 isPublished: true,
             },
