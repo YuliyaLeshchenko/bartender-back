@@ -53,7 +53,7 @@ export class CocktailsService {
                 cocktail && cocktails.push(cocktail);
                 return
             })
-            
+
             console.log(cocktails);
             return;
         })
@@ -73,7 +73,7 @@ export class CocktailsService {
         return result;
     }
 
-    async getCocktailsByTag(tag) {
+    async getCocktailsByTag(tag, limit = 10, skip = 0) {
         return this.prisma.cocktail.findMany({
             where: {
                 tags: {
@@ -94,7 +94,9 @@ export class CocktailsService {
                         order: true,
                     }
                 }
-            }
+            },
+            take: limit + 1,
+            skip: skip,
         })
     }
 
@@ -163,6 +165,7 @@ export class CocktailsService {
             select: {
                 id: true,
                 name: true,
+                description: true,
                 imageUrl: true,
                 rating: true,
                 countOfRating: true,
@@ -237,6 +240,7 @@ export class CocktailsService {
             select: {
                 id: true,
                 name: true,
+                description: true,
                 imageUrl: true,
                 rating: true,
                 countOfRating: true,
@@ -286,8 +290,5 @@ export class CocktailsService {
         return cocktails;
     }
 
-    async updateCocktail(dto: UpdateCocktailDto) {
-        // const cocktails = await this.cocktailRepository.update(dto.id , dto);
-        // return cocktails;
-    }
+    async updateCocktail(dto: UpdateCocktailDto) {}
 }
