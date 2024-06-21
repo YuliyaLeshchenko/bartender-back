@@ -12,6 +12,26 @@ export class CocktailsService {
         return cocktail;
     }
 
+    async getSimplifiedLastUpdatedCocktails({ limit, skip }) {
+        const cocktails = await this.prisma.cocktail.findMany({
+            where: {
+                isPublished: true,
+            },
+            select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            skip,
+            take: limit,
+        });
+
+        return cocktails;
+    }
+
     async getSimplifiedCocktails() {
         let cocktails = [];
         const tagTypes = await this.prisma.tagType.findMany({
@@ -45,16 +65,12 @@ export class CocktailsService {
         });
 
         const shownTags = tags.filter(tag => tag.order === 1);
-        console.log(shownTags, 'shownTags');
-
-        await Promise.all(shownTags.map(tag => this.getCocktailsByTag(tag.name))).then(res => {
+        await Promise.all(shownTags.map(tag => this.getCocktailsByTag(tag.name, { limit: 10, skip: 0 }))).then(res => {
             [...new Set([...res.flat().map(cocktail => cocktail.id)])].map(cocktailId => {
                 const cocktail = res.flat().find(c => c.id === cocktailId);
                 cocktail && cocktails.push(cocktail);
                 return
-            })
-
-            console.log(cocktails);
+            });
             return;
         })
 
@@ -65,7 +81,7 @@ export class CocktailsService {
                 tags: t.map(tag => {
                     return {
                         ...tag,
-                        cocktails: [...cocktails.filter(cocktail => cocktail.tags.filter(t => t.id === tag.id).length)],
+                        cocktails: [...cocktails.filter(cocktail => cocktail.tags.filter(t => t.id === tag.id).length)].slice(0, 11),
                     }
                 }).sort((a, b) => a.order - b.order)
             }
@@ -73,7 +89,7 @@ export class CocktailsService {
         return result;
     }
 
-    async getCocktailsByTag(tag, limit = 10, skip = 0) {
+    async getCocktailsByTag(tag, { limit, skip }) {
         return this.prisma.cocktail.findMany({
             where: {
                 tags: {
@@ -95,8 +111,11 @@ export class CocktailsService {
                     }
                 }
             },
-            take: limit + 1,
-            skip: skip,
+            take: (+limit ?? 10),
+            skip: (+skip ?? 0),
+            orderBy: {
+                createdAt: 'desc'
+            }
         })
     }
 
@@ -156,10 +175,33 @@ export class CocktailsService {
         return cocktails;
     }
 
-    async getCocktailById(id: number) {
+    async getFavoriteCocktails({userId, limit, skip}) {
+        const userCocktails = await this.prisma.user.findFirst({ where: { appId: userId }, select: {userFavorite: {
+            select: {
+                cocktailId: true
+            }
+        }}});
+        const cocktailsIds = userCocktails.userFavorite.map(cocktail=> cocktail.cocktailId);
+        const cocktails = await this.prisma.cocktail.findMany({
+            where: {
+                id: {
+                    in: cocktailsIds,
+                }
+            },
+            select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+            }
+        })
+        return cocktails;
+    }
+
+    async getCocktailById({ cocktailId, userId }) {
+        const { id } = await this.prisma.user.findFirst({ where: { appId: userId }, select: { id: true } });
         const cocktail = await this.prisma.cocktail.findFirst({
             where: {
-                id: +id,
+                id: +cocktailId,
                 isPublished: true,
             },
             select: {
@@ -207,6 +249,24 @@ export class CocktailsService {
                                 description: true,
                             }
                         },
+                    }
+                },
+                userFavorites: {
+                    where: {
+                        userId: id,
+                        cocktailId: +cocktailId,
+                    },
+                    select: {
+                        cocktailId: true
+                    }
+                },
+                userRatings: {
+                    where: {
+                        userId: id,
+                        cocktailId: +cocktailId,
+                    },
+                    select: {
+                        rating: true,
                     }
                 }
             }
@@ -290,5 +350,43 @@ export class CocktailsService {
         return cocktails;
     }
 
-    async updateCocktail(dto: UpdateCocktailDto) {}
+    async setFavoriteCocktail({ userId, cocktailId }) {
+        const { id } = await this.prisma.user.findFirst({ where: { appId: +userId }, select: { id: true } });
+        const existingFav = await this.prisma.userFavorite.findFirst({ where: { userId: id, cocktailId: +cocktailId } });
+        if (existingFav) {
+            await this.prisma.userFavorite.delete({
+                where: {
+                    id: existingFav.id
+                }
+            })
+            return 'was removed';
+        }
+
+        await this.prisma.userFavorite.create({
+            data: {
+                userId: id,
+                cocktailId: cocktailId,
+            }
+        })
+
+        return 'created';
+    }
+
+    async rateCocktail({ userId, cocktailId, userRating }) {
+        const { id } = await this.prisma.user.findFirst({ where: { appId: userId }, select: { id: true } });
+        const { rating, countOfRating } = await this.prisma.cocktail.findFirst({ where: { id: cocktailId }, select: { rating: true, countOfRating: true } });
+        const existRating = await this.prisma.userRating.findFirst({ where: { cocktailId: cocktailId, userId: id } });
+        if (existRating) {
+            const prevRate = (rating * countOfRating) - existRating.rating;
+            const uRate = await this.prisma.userRating.update({ where: { id: existRating.id }, data: { rating: userRating } });
+            const newRating = (prevRate + +uRate.rating) / countOfRating
+            await this.prisma.cocktail.update({ where: { id: cocktailId }, data: { countOfRating: +countOfRating, rating: newRating } });
+            return 'rating was updated';
+        }
+
+        const uRate = await this.prisma.userRating.create({ data: { cocktailId: cocktailId, userId: id, rating: userRating } });
+        const newRating = +rating === 0 ? +uRate.rating : (((+rating ?? 0) * +countOfRating) + +uRate.rating) / (+countOfRating + 1);
+        await this.prisma.cocktail.update({ where: { id: cocktailId }, data: { countOfRating: +countOfRating + 1, rating: newRating } });
+        return;
+    }
 }

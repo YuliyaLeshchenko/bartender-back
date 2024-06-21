@@ -4,6 +4,7 @@ import { CocktailModule } from './cocktails/cocktails.module';
 import { IngredientTypesModule } from './ingredient-types/ingredient-types.module';
 import { IngredientsModule } from './ingredients/ingredients.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { UsersModule } from './users/users.module';
 
 
 @Module({
@@ -13,6 +14,7 @@ import { PrismaModule } from './prisma/prisma.module';
     IngredientTypesModule,
     IngredientsModule,
     PrismaModule,
+    UsersModule,
   ],
 })
 export class AppModule { }

@@ -28,12 +28,4 @@ export class IngredientsController {
     getById(@Param('id') id: number) {
         return this.ingredientService.getIngredientsById(id);
     }
-
-    // @ApiOperation({summary: 'Get ingredients by type'})
-    // @ApiResponse({status: 200, type: [IngredientDto]})
-    // @Get()
-    // getByType(@Query('ingredientTypeId') ingredientTypeId: number) {
-    //     console.log(ingredientTypeId, 'ingredientTypeId');
-    //     return this.ingredientService.getIngredientsByType(ingredientTypeId);
-    // }
 }

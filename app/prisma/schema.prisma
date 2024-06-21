@@ -10,8 +10,20 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:root1@10.142.0.2:5434/bartender?schema=public"
+    url      = "postgresql://postgres:root1@10.142.0.2:5434/bartender?schema=public"
   // url      = "postgresql://postgres:root1@35.237.243.32:5434/bartender?schema=public"
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  appId        Int?
+  firstName    String?
+  lastName     String?
+  userRatings  UserRating[]
+  userFavorite UserFavorite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model TagType {
@@ -106,6 +118,31 @@ model IngredientsOnMeasurements {
   cocktail     Cocktail    @relation(fields: [cocktailId], references: [id])
 }
 
+model UserRating {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  cocktailId Int
+  cocktail   Cocktail @relation(fields: [cocktailId], references: [id])
+  rating     Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserFavorite {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  cocktailId Int
+  cocktail   Cocktail @relation(fields: [cocktailId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("favorites")
+}
+
 model CocktailInstruction {
   id         Int      @id @default(autoincrement())
   order      Int
@@ -132,6 +169,8 @@ model Cocktail {
   rating        Float?
   countOfRating Int                         @default(0)
   isPublished   Boolean                     @default(false)
+  userRatings   UserRating[]
+  userFavorites UserFavorite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
