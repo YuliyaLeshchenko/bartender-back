@@ -39,7 +39,7 @@ export class CocktailsController {
 
     @ApiOperation({ summary: 'Get cocktail by ID' })
     @ApiResponse({ status: 200, type: [String] })
-    @Get("user/:userId/cocktail/:id")
+    @Get("users/:userId/cocktails/:id")
     getById(@Param('id') id: string, @Param('userId') userId: string) {
         return this.cocktailsService.getCocktailById({ cocktailId: +id, userId: +userId });
     }
