@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 
@@ -9,7 +9,7 @@ export class UsersController {
 
     @ApiOperation({summary: 'Create cocktail'})
     @ApiResponse({status: 200, type: String})
-    @Post(":appId")
+    @Get(":appId")
     create(@Param('appId') appId: string) {
         return this.userService.createUser(+appId);
     }
