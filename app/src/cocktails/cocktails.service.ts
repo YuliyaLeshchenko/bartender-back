@@ -81,7 +81,16 @@ export class CocktailsService {
                 tags: t.map(tag => {
                     return {
                         ...tag,
-                        cocktails: [...cocktails.filter(cocktail => cocktail.tags.filter(t => t.id === tag.id).length)].slice(0, 11),
+                        cocktails: [...cocktails.filter(cocktail => cocktail.tags.filter(t => t.id === tag.id).length).sort((a, b) => {
+                            return new Date(b.createdAt as Date).getTime() - new Date(a.createdAt as Date).getTime();
+                        }).map(cocktail => {
+                            return {
+                                id: cocktail.id,
+                                name: cocktail.name,
+                                imageUrl: cocktail.imageUrl,
+                                tags: cocktail.tags,
+                            }
+                        })].slice(0, 11),
                     }
                 }).sort((a, b) => a.order - b.order)
             }
@@ -109,7 +118,8 @@ export class CocktailsService {
                         name: true,
                         order: true,
                     }
-                }
+                },
+                createdAt: true,
             },
             take: (+limit ?? 10),
             skip: (+skip ?? 0),
@@ -175,13 +185,17 @@ export class CocktailsService {
         return cocktails;
     }
 
-    async getFavoriteCocktails({userId, limit, skip}) {
-        const userCocktails = await this.prisma.user.findFirst({ where: { appId: userId }, select: {userFavorite: {
-            select: {
-                cocktailId: true
+    async getFavoriteCocktails({ userId, limit, skip }) {
+        const userCocktails = await this.prisma.user.findFirst({
+            where: { appId: userId }, select: {
+                userFavorite: {
+                    select: {
+                        cocktailId: true
+                    }
+                }
             }
-        }}});
-        const cocktailsIds = userCocktails.userFavorite.map(cocktail=> cocktail.cocktailId);
+        });
+        const cocktailsIds = userCocktails.userFavorite.map(cocktail => cocktail.cocktailId);
         const cocktails = await this.prisma.cocktail.findMany({
             where: {
                 id: {
