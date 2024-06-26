@@ -5,6 +5,7 @@ import { IngredientTypesModule } from './ingredient-types/ingredient-types.modul
 import { IngredientsModule } from './ingredients/ingredients.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
+import { PostsModule } from './posts/posts.module';
 
 
 @Module({
@@ -15,6 +16,7 @@ import { UsersModule } from './users/users.module';
     IngredientsModule,
     PrismaModule,
     UsersModule,
+    PostsModule,
   ],
 })
 export class AppModule { }

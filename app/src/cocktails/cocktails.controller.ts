@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreateCocktailDto } from './dto/create-cocktail.dto';
+import { Controller, Get, Param } from '@nestjs/common';
 import { CocktailsService } from './cocktails.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Cocktails')
 @Controller('cocktails')

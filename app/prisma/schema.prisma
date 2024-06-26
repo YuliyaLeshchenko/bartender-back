@@ -49,6 +49,45 @@ model Tag {
   updatedAt DateTime @updatedAt
 }
 
+model PostTag {
+  id          Int     @id @default(autoincrement())
+  order       Int     @default(0)
+  name        String  @unique
+  description String?
+  isShown     Boolean @default(false)
+  postId      Int?
+  post        Post?   @relation(fields: [postId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PostSection {
+  id     Int     @id @default(autoincrement())
+  order  Int     @default(0)
+  text   String  @unique
+  type   String?
+  postId Int?
+  post   Post?   @relation(fields: [postId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id          Int           @id @default(autoincrement())
+  order       Int           @default(0)
+  title       String        @unique
+  description String?
+  tags        PostTag[]
+  isShown     Boolean       @default(false)
+  pinned      Boolean       @default(false)
+  sections    PostSection[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model IngredientType {
   id          Int          @id @default(autoincrement())
   name        String       @unique
