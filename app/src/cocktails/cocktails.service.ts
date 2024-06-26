@@ -1,16 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCocktailDto, UpdateCocktailDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CocktailsService {
 
     constructor(private readonly prisma: PrismaService) { }
-
-    async createCocktail(dto: CreateCocktailDto): Promise<any> {
-        const cocktail = {};
-        return cocktail;
-    }
 
     async getSimplifiedLastUpdatedCocktails({ limit, skip }) {
         const cocktails = await this.prisma.cocktail.findMany({
