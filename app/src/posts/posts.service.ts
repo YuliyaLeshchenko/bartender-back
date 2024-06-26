@@ -109,7 +109,6 @@ export class PostsService {
                 sections: {
                     select: {
                         id: true,
-                        order: true,
                         type: true,
                         text: true,
                     },
