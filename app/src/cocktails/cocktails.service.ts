@@ -286,7 +286,7 @@ export class CocktailsService {
             }
         });
 
-        return {...cocktail, rating: (+cocktail.rating ?? 0).toFixed(1)};
+        return cocktail;
     }
 
     async getCocktailsByName(name: string = "") {
