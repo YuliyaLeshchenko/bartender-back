@@ -1,16 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateIngredintDto, IngredientDto } from './dto';
 
 @Injectable()
 export class IngredientsService {
 
     constructor(private readonly prisma: PrismaService) {}
-
-    async createIngredient(dto: CreateIngredintDto): Promise<IngredientDto> {
-        const ingredient = await this.prisma.ingredient.create({data: dto});
-        return ingredient;
-    }
 
     async getIngredients(): Promise<any[]> {
         const ingredients = await this.prisma.ingredient.findMany({

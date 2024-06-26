@@ -1,29 +1,20 @@
-import { Body, Controller, Get, Param, Post, Query, Request } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IngredientsService } from './ingredients.service';
-import { CreateIngredintDto, IngredientDto } from './dto';
 
 @ApiTags('Ingredient')
 @Controller('ingredients')
 export class IngredientsController {
     constructor(private readonly ingredientService: IngredientsService) {}
-
-    @ApiOperation({summary: 'Create cocktail'})
-    @ApiResponse({status: 200, type: IngredientDto})
-    @Post()
-    create(@Body() dto: CreateIngredintDto) {
-        return this.ingredientService.createIngredient(dto);
-    }
-
     @ApiOperation({summary: 'Get ingredients'})
-    @ApiResponse({status: 200, type: [IngredientDto]})
+    @ApiResponse({status: 200, type: [String]})
     @Get()
     getAll() {
         return this.ingredientService.getIngredients();
     }
 
     @ApiOperation({summary: 'Get ingredients by id'})
-    @ApiResponse({status: 200, type: [IngredientDto]})
+    @ApiResponse({status: 200, type: [String]})
     @Get(":id")
     getById(@Param('id') id: number) {
         return this.ingredientService.getIngredientsById(id);
