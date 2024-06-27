@@ -56,6 +56,9 @@ export class PostsService {
     }
 
     async getPostsByTag(tag, { limit = 10, skip = 0}) {
+        if (tag === 'Other') {
+            return this.getPostsLatest(true, {limit: 10, skip: 0});
+        }
         const posts = await this.prisma.post.findMany({
             where: {
                 isShown: true,
