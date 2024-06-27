@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-    url      = "postgresql://postgres:root1@10.142.0.2:5434/bartender?schema=public"
+  url      = "postgresql://postgres:root1@10.142.0.2:5434/bartender?schema=public"
   // url      = "postgresql://postgres:root1@34.139.248.116:5434/bartender?schema=public"
 }
 
@@ -79,6 +79,7 @@ model Post {
   order       Int           @default(0)
   title       String        @unique
   description String?
+  image       String?
   tags        PostTag[]
   isShown     Boolean       @default(false)
   pinned      Boolean       @default(false)

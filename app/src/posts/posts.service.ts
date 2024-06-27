@@ -26,6 +26,7 @@ export class PostsService {
             select: {
                 id: true,
                 title: true,
+                image: true,
                 tags: {
                     select: {
                         id: true,
@@ -35,7 +36,6 @@ export class PostsService {
                 sections: {
                     select: {
                         id: true,
-                        order: true,
                         type: true,
                         text: true,
                     },
@@ -67,6 +67,7 @@ export class PostsService {
             select: {
                 id: true,
                 title: true,
+                image: true,
                 tags: {
                     select: {
                         id: true,
@@ -76,7 +77,6 @@ export class PostsService {
                 sections: {
                     select: {
                         id: true,
-                        order: true,
                         type: true,
                         text: true,
                     },
@@ -100,6 +100,7 @@ export class PostsService {
             select: {
                 id: true,
                 title: true,
+                image: true,
                 tags: {
                     select: {
                         id: true,
