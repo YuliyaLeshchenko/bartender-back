@@ -18,10 +18,11 @@ export class PostsService {
         return posts;
     }
 
-    async getPostsLatest({ limit = 10, skip = 0}) {
+    async getPostsLatest(skipPinned = false, { limit = 10, skip = 0}) {
         const posts = await this.prisma.post.findMany({
             where: {
                 isShown: true,
+                pinned: !skipPinned,
             },
             select: {
                 id: true,
@@ -143,7 +144,7 @@ export class PostsService {
         });
         if (postTags.length === 0) return 'failed';
 
-        const posts = await this.getPostsLatest({limit: 10, skip: 0});
+        const posts = await this.getPostsLatest(true,{limit: 10, skip: 0});
 
         const tags = postTags.map((tag, index) => {
             return {
@@ -151,7 +152,7 @@ export class PostsService {
                 posts: []
             }
         });
-        tags.unshift({tag: {id: 0, name: 'All'}, posts})
+        tags.unshift({tag: {id: 0, name: 'Other'}, posts})
 
         return {
             pinned,
